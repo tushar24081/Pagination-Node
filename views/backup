@@ -1,0 +1,16 @@
+const id = document.getElementById("id");
+    id.addEventListener("click", () => {
+    console.log(id);
+    // const url = new URL(id.href);
+    // const searchParams = url.searchParams;
+    // if(searchParams.get("sort") === "asc"){
+    //     console.log("came inside");
+    //     searchParams.set("sort", "desc");
+    // }else{
+    //     searchParams.set("sort", "asc");
+    // }
+
+    // console.log(searchParams);
+    // newString = `?page=1&sort=${searchParams.get('sort')}&col=sid`;
+    // window.location.href = "/"+newString; 
+    });
