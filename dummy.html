@@ -1,0 +1,22 @@
+<div id="output" style="min-height: 200px; white-space: pre; border: 1px solid black;"
+ondragenter="document.getElementById('output').textContent = ''; event.stopPropagation(); event.preventDefault()"
+ondragover="event.stopPropagation(); event.preventDefault()"
+ondrop="event.stopPropagation(); event.preventDefault(); dodrop(event);"
+">
+    DROP FILES HERE FROM FINDER OR EXPLORER
+</div>
+
+<script>
+function dodrop(event){
+    var dt = event.dataTransfer;
+    var files = dt.files;
+
+    for(var i=0; i<files.length; i++){
+        output_print(files[i].name);
+    }
+}
+
+function output_print(text){
+    document.getElementById("output").innerText += text + "\n";
+}
+</script>

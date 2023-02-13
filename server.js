@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
     let page = req.query.page || 1;
     const sort = req.query.sort || "asc";
     var col = req.query.col || "sid";
-    if(col == "University") col = "u.name";
+    if (col == "University") col = "u.name";
     const offset = (page - 1) * limit;
     select_query = `select * from Student.Student_Express s INNER JOIN University_Mst u ON s.University = u.id order by ${col} ${sort} LIMIT ${offset}, ${limit} `;
     total_pages = Math.ceil(total_records / limit);
@@ -42,17 +42,75 @@ app.get("/", (req, res) => {
     })
 })
 app.post("/search", (req, res) => {
-    console.log(req.body);
-    var query = `SELECT * FROM Student.Student_Express where First_Name LIKE '${req.body.query}%'`;
+    let searchString = req.body.query;
+    let choice = req.body.op;
+    console.log(choice);
+    var delm = ["/", "$", "~", "^"];
+    let singleName = "";
+    for(let i=0; i<searchString.length; i++){
+        if(delm.includes(searchString[i])){
+            singleName += " " + searchString[i] ;
+        }
+        else{
+            singleName += searchString[i]
+        }
+    }
+    var nameArr = singleName.split(" ");
+    console.log(nameArr);
+    let queryString = "where";
+    hasCameBefore = false;
+    nameArr.forEach(name => {
+        console.log(name[0]);
+        if (name[0] == "^") {
+            if (hasCameBefore) { 
+                queryString += ` ${choice} First_Name LIKE '${name.slice(1)}%'` 
+            }
+            else { 
+                queryString += ` First_Name LIKE '${name.slice(1)}%'`;
+                hasCameBefore = true
+            }
+        }
+        if (name[0] == "$") {
+            if (hasCameBefore) {
+                queryString += ` ${choice} Last_Name LIKE '${name.slice(1)}%'`
+            }
+            else {
+                queryString += ` Last_Name LIKE '${name.slice(1)}%'`
+                hasCameBefore = true
+
+            }
+        }
+        if (name[0] == "~") {
+            if (hasCameBefore) {
+                queryString += ` ${choice} Email LIKE '${name.slice(1)}%'`
+            }
+            else {
+                queryString += ` Last_Name LIKE '${name.slice(1)}%'`
+                hasCameBefore = true
+
+            }
+        }
+        if (name[0] == "/") {
+            if (hasCameBefore) {
+                queryString += `${choice} City LIKE '${name.slice(1)}%'`
+            } else {
+                queryString += ` City LIKE '${name.slice(1)}%'`
+                hasCameBefore = true
+            }
+        }
+        console.log(queryString);
+    });
+    var query = `select * from Student.Student_Express s INNER JOIN University_Mst u ON s.University = u.id
+    ${queryString}`;
     connection.query(query, (err, ans) => {
         if (err) return res.send(err.message);
-        res.render("search", { data: ans })
+        res.render("search", { data: ans, searchString, choice })
     })
 })
 
 app.get("/render", (req, resp) => {
     let ans_array = [[], [], [], [], [], [], [], [], []]
-    
+
     connection.query(`SELECT * FROM Student.Student_Express LIMIT 0, 10`, (err, res) => {
         if (err) return res.send(err.message);
         ans_array[0].push(...res)
@@ -90,7 +148,7 @@ app.get("/render", (req, resp) => {
         if (err) return res.send(err.message);
         ans_array[8].push(...res)
         console.log(ans_array[0]);
-        resp.render("tables", {data: ans_array})
+        resp.render("tables", { data: ans_array })
     })
 
 

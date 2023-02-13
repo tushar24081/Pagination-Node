@@ -15,8 +15,18 @@
     </style>
    <center><div>Student Data Table </div></center><br>
    <center>
+    <ul style="text-align: center;">
+        <li>^: First Name</li>
+        <li>$: Last Name</li>
+        <li>~: Email</li>
+        <li>/: City</li>
+      </ul>
     <form action="/search" method="post">
         <input type="text" name="query" placeholder="Enter Name of Student ">
+        <select name="op" id="op">
+            <option value="AND">AND</option>
+            <option value="OR">OR</option>
+          </select>
         <input type="submit" value="Search">
     </form>
     <br>
